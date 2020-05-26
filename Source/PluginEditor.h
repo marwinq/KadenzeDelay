@@ -25,12 +25,15 @@ public:
     //==============================================================================
     void paint (Graphics&) override;
     void resized() override;
+    void initializeSlider(Slider* s[],AudioParameterFloat* p[], int l);
 
 private:
     
     Slider mDryWetSlider;
     Slider mFeedbackSlider;
     Slider mDelayTimeSlider;
+    
+    Slider *sliderArray[3];
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     KadenzeDelayAudioProcessor& processor;

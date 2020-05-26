@@ -24,44 +24,43 @@ KadenzeDelayAudioProcessorEditor::KadenzeDelayAudioProcessorEditor (KadenzeDelay
     AudioParameterFloat* feedbackParameter = (AudioParameterFloat*)params.getUnchecked(1);
     AudioParameterFloat* delayTimeParameter = (AudioParameterFloat*)params.getUnchecked(2);
     
-    //Dry Wet
-    mDryWetSlider.setBounds(0,0,100,100);
-    mDryWetSlider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
-    mDryWetSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, true, 100, 30);
+    AudioParameterFloat* parameterArray[3];
+    parameterArray[0]= dryWetParameter;
+    parameterArray[1]= feedbackParameter;
+    parameterArray[2]= delayTimeParameter;
     
-    mDryWetSlider.setRange(dryWetParameter->range.start, dryWetParameter->range.end);
-    mDryWetSlider.setValue(*dryWetParameter);
-    addAndMakeVisible(mDryWetSlider);
+    //Slider Declaration
     
-    mDryWetSlider.onValueChange = [this, dryWetParameter]{ *dryWetParameter = mDryWetSlider.getValue();};
-    mDryWetSlider.onDragStart = [dryWetParameter] { dryWetParameter->beginChangeGesture(); };
-    mDryWetSlider.onDragEnd = [dryWetParameter] {dryWetParameter->endChangeGesture();};
+    sliderArray[0]= &mDryWetSlider;
+    sliderArray[1]= &mFeedbackSlider;
+    sliderArray[2]= &mDelayTimeSlider;
     
-    //Feedback
-    mFeedbackSlider.setBounds(100,0,100,100);
-    mFeedbackSlider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
-    mFeedbackSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, true, 100, 30);
+    //Function prototype for initializing multiple sliders.. 
     
-    mFeedbackSlider.setRange(feedbackParameter->range.start, feedbackParameter->range.end);
-    mFeedbackSlider.setValue(*feedbackParameter);
-    addAndMakeVisible(mFeedbackSlider);
+    for (int i=0; i <3;i++){
+        
+        sliderArray[i]->setBounds((i)*100,0,100,100);
+        sliderArray[i]->setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
+        sliderArray[i]->setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, true, 100, 30);
+        sliderArray[i]->setRange(parameterArray[i]->range.start, parameterArray[i]->range.end);
+        sliderArray[i]->setValue(*parameterArray[i]);
+        addAndMakeVisible(sliderArray[i]);
+        
+        sliderArray[i]->onValueChange = [=] { *parameterArray[i] = sliderArray[i]->getValue() ;};
+        sliderArray[i]->onDragStart = [=] { parameterArray[i]->beginChangeGesture();};
+        sliderArray[i]->onDragEnd = [=] { parameterArray[i]->endChangeGesture();};
+    }
     
-    mFeedbackSlider.onValueChange = [this, feedbackParameter]{ *feedbackParameter = mFeedbackSlider.getValue();};
-    mFeedbackSlider.onDragStart = [feedbackParameter] { feedbackParameter->beginChangeGesture(); };
-    mFeedbackSlider.onDragEnd = [feedbackParameter] {feedbackParameter->endChangeGesture();};
+    //Function should take in an array of sliders and their respective parameters and initialize the sliders.
+    //sizeof operator to state the upper bound results in crashes.
+    //initializeSlider(sliderArray,parameterArray,3);
+     
     
-    //Delay Time
-    mDelayTimeSlider.setBounds(200,0,100,100);
-    mDelayTimeSlider.setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
-mDelayTimeSlider.setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, true, 100, 30);
+    //This results in a crash. Need to continue debugging.
+   // initializeSlider(sliderArray,parameterArray, sizeof(sliderArray));
+
     
-    mDelayTimeSlider.setRange(delayTimeParameter->range.start, delayTimeParameter->range.end);
-    mDelayTimeSlider.setValue(*delayTimeParameter);
-    addAndMakeVisible(mDelayTimeSlider);
-    
-    mDelayTimeSlider.onValueChange = [this, delayTimeParameter]{ *delayTimeParameter = mDelayTimeSlider.getValue();};
-    mDelayTimeSlider.onDragStart = [delayTimeParameter] { delayTimeParameter->beginChangeGesture(); };
-    mDelayTimeSlider.onDragEnd = [delayTimeParameter] {delayTimeParameter->endChangeGesture();};
+
 }
 
 KadenzeDelayAudioProcessorEditor::~KadenzeDelayAudioProcessorEditor()
@@ -84,3 +83,23 @@ void KadenzeDelayAudioProcessorEditor::resized()
     // This is generally where you'll want to lay out the positions of any
     // subcomponents in your editor..
 }
+
+
+void KadenzeDelayAudioProcessorEditor::initializeSlider(Slider* s[], AudioParameterFloat* p[], int l)
+{
+    for (int i=0; i < l;i++){
+        
+        s[i]->setBounds((i)*100,0,100,100);
+        s[i]->setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
+        s[i]->setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, true, 100, 30);
+        s[i]->setRange(p[i]->range.start, p[i]->range.end);
+        s[i]->setValue(*p[i]);
+        addAndMakeVisible(s[i]);
+        
+        s[i]->onValueChange = [=] { *p[i] = s[i]->getValue() ;};
+        s[i]->onDragStart = [=] { p[i]->beginChangeGesture();};
+        s[i]->onDragEnd = [=] { p[i]->endChangeGesture();};
+    }
+ 
+}
+
