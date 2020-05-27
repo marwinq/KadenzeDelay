@@ -12,6 +12,7 @@
 
 #include <JuceHeader.h>
 #include "PluginProcessor.h"
+#include <array>
 
 //==============================================================================
 /**
@@ -25,7 +26,7 @@ public:
     //==============================================================================
     void paint (Graphics&) override;
     void resized() override;
-    void initializeSlider(Slider* s[],AudioParameterFloat* p[], int l);
+    void initializeSlider(std::array<Slider *,3> s, std::array<AudioParameterFloat *,3> p);
 
 private:
     
@@ -34,6 +35,7 @@ private:
     Slider mDelayTimeSlider;
     
     Slider *sliderArray[3];
+    
     // This reference is provided as a quick way for your editor to
     // access the processor object that created it.
     KadenzeDelayAudioProcessor& processor;

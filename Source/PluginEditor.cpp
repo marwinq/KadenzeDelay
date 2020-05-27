@@ -10,6 +10,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
+#include <array>
 
 //==============================================================================
 KadenzeDelayAudioProcessorEditor::KadenzeDelayAudioProcessorEditor (KadenzeDelayAudioProcessor& p)
@@ -25,6 +26,10 @@ KadenzeDelayAudioProcessorEditor::KadenzeDelayAudioProcessorEditor (KadenzeDelay
     AudioParameterFloat* delayTimeParameter = (AudioParameterFloat*)params.getUnchecked(2);
     
     AudioParameterFloat* parameterArray[3];
+    
+    std::array<AudioParameterFloat *,3> pArray {dryWetParameter,feedbackParameter,delayTimeParameter};
+    std::array<Slider *, 3> sArray {&mDryWetSlider, &mFeedbackSlider, &mDelayTimeSlider};
+    
     parameterArray[0]= dryWetParameter;
     parameterArray[1]= feedbackParameter;
     parameterArray[2]= delayTimeParameter;
@@ -35,31 +40,9 @@ KadenzeDelayAudioProcessorEditor::KadenzeDelayAudioProcessorEditor (KadenzeDelay
     sliderArray[1]= &mFeedbackSlider;
     sliderArray[2]= &mDelayTimeSlider;
     
-    //Function prototype for initializing multiple sliders.. 
-    
-    for (int i=0; i <3;i++){
-        
-        sliderArray[i]->setBounds((i)*100,0,100,100);
-        sliderArray[i]->setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
-        sliderArray[i]->setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, true, 100, 30);
-        sliderArray[i]->setRange(parameterArray[i]->range.start, parameterArray[i]->range.end);
-        sliderArray[i]->setValue(*parameterArray[i]);
-        addAndMakeVisible(sliderArray[i]);
-        
-        sliderArray[i]->onValueChange = [=] { *parameterArray[i] = sliderArray[i]->getValue() ;};
-        sliderArray[i]->onDragStart = [=] { parameterArray[i]->beginChangeGesture();};
-        sliderArray[i]->onDragEnd = [=] { parameterArray[i]->endChangeGesture();};
-    }
-    
-    //Function should take in an array of sliders and their respective parameters and initialize the sliders.
-    //sizeof operator to state the upper bound results in crashes.
-    //initializeSlider(sliderArray,parameterArray,3);
-     
-    
-    //This results in a crash. Need to continue debugging.
-   // initializeSlider(sliderArray,parameterArray, sizeof(sliderArray));
 
-    
+    initializeSlider(sArray,pArray);
+
 
 }
 
@@ -85,20 +68,20 @@ void KadenzeDelayAudioProcessorEditor::resized()
 }
 
 
-void KadenzeDelayAudioProcessorEditor::initializeSlider(Slider* s[], AudioParameterFloat* p[], int l)
+void KadenzeDelayAudioProcessorEditor::initializeSlider(std::array<Slider *,3> s, std::array<AudioParameterFloat *,3> p)
 {
-    for (int i=0; i < l;i++){
+    for (int i=0; i < s.size();i++){
         
-        s[i]->setBounds((i)*100,0,100,100);
-        s[i]->setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
-        s[i]->setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, true, 100, 30);
-        s[i]->setRange(p[i]->range.start, p[i]->range.end);
-        s[i]->setValue(*p[i]);
-        addAndMakeVisible(s[i]);
+        s.at(i)->setBounds((i)*100,0,100,100);
+        s.at(i)->setSliderStyle(Slider::SliderStyle::RotaryVerticalDrag);
+        s.at(i)->setTextBoxStyle(Slider::TextEntryBoxPosition::TextBoxBelow, true, 100, 30);
+        s.at(i)->setRange(p.at(i)->range.start, p.at(i)->range.end);
+        s.at(i)->setValue(*p.at(i));
+        addAndMakeVisible(s.at(i));
         
-        s[i]->onValueChange = [=] { *p[i] = s[i]->getValue() ;};
-        s[i]->onDragStart = [=] { p[i]->beginChangeGesture();};
-        s[i]->onDragEnd = [=] { p[i]->endChangeGesture();};
+        s.at(i)->onValueChange = [=] { *p.at(i) = s.at(i)->getValue() ;};
+        s.at(i)->onDragStart = [=] { p.at(i)->beginChangeGesture();};
+        s.at(i)->onDragEnd = [=] { p.at(i)->endChangeGesture();};
     }
  
 }
