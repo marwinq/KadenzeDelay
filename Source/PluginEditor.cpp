@@ -31,7 +31,7 @@ KadenzeDelayAudioProcessorEditor::KadenzeDelayAudioProcessorEditor (KadenzeDelay
     std::array<Slider *, 3> sArray {&mDryWetSlider, &mFeedbackSlider, &mDelayTimeSlider};
     
     parameterArray[0]= dryWetParameter;
-    parameterArray[1]= feedbackParameter;
+    parameterArray[1]= feedbackParameter; 
     parameterArray[2]= delayTimeParameter;
     
     //Slider Declaration
